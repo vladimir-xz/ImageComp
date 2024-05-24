@@ -7,32 +7,23 @@ use app\models\ImagesRecords;
 
 class ImagesRepository
 {
-    private $currentOffset = 0;
-    private $limit;
     private $db;
 
-    public function __construct($limit = 5)
+    public function __construct()
     {
-        $this->limit = $limit;
         $this->db = Ad::find();
     }
 
-    private function moveCurrentOffset(): void
-    {
-        $this->currentOffset += $this->limit;
-    }
-
-    public function getRecords()
+    public function getRecords(int $fromOffset, int $limitPerPequest)
     {
         $records = $this->db
-            ->offset($this->currentOffset)
-            ->limit($this->limit)
+            ->offset($fromOffset)
+            ->limit($limitPerPequest)
             ->where(['is not', 'image_url', null])
             ->all();
         if (!$records) {
             return false;
         }
-        $this->moveCurrentOffset();
         return new ImagesRecords($records);
     }
 

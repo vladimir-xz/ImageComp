@@ -8,7 +8,6 @@ class ImagesProcessor
 {
     private $repository;
     private $successed;
-    private $saved = [];
 
     public function __construct($repositury = new ImagesRepository())
     {
@@ -21,9 +20,9 @@ class ImagesProcessor
         $this->successed += $images->getAmountOfNew();
     }
 
-    public function process(): int
+    public function process($fromOffset = 0, $limitPerPequest = 5): int
     {
-        if (!$records = $this->repository->getRecords()) {
+        if (!$records = $this->repository->getRecords($fromOffset, $limitPerPequest)) {
             return $this->successed;
         }
         foreach ($records as $images) {
@@ -31,12 +30,12 @@ class ImagesProcessor
             $this->repository->saveImages($images);
             $this->addSuccessed($images);
         }
-        return $this->process();
+        $nextOffset = $fromOffset + $limitPerPequest;
+        return $this->process($nextOffset);
     }
 
     private function checkImages($images)
     {
-        $this->saved[] = $images;
         foreach ($images as $image) {
             if ($this->repository->ifExistUrl($image)) {
                 continue;
