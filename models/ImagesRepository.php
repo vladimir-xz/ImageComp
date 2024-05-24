@@ -11,7 +11,7 @@ class ImagesRepository
     private $limit;
     private $db;
 
-    public function __construct($limit = 1)
+    public function __construct($limit = 5)
     {
         $this->limit = $limit;
         $this->db = Ad::find();
