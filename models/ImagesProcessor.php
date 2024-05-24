@@ -7,37 +7,36 @@ use app\models\ImagesRepository;
 class ImagesProcessor
 {
     private $repository;
-    private $successed = 0;
+    private $successed;
+    private $saved = [];
 
     public function __construct($repositury = new ImagesRepository())
     {
+        $this->successed = 0;
         $this->repository = $repositury;
     }
 
-    private function addSuccessed($amount)
+    private function addSuccessed($images)
     {
-        $this->successed += $amount;
+        $this->successed += $images->getAmountOfNew();
     }
 
-    public function process()
+    public function process(): int
     {
-        while ($records = $this->repository->getRecords()) {
-            $this->processRecords($records);
-        };
-        return $this->successed;
-    }
-
-    private function processRecords($records)
-    {
+        if (!$records = $this->repository->getRecords()) {
+            return $this->successed;
+        }
         foreach ($records as $images) {
             $this->checkImages($images);
             $this->repository->saveImages($images);
-            $this->addSuccessed($images->getAmountOfNew());
+            $this->addSuccessed($images);
         }
+        return $this->process();
     }
 
     private function checkImages($images)
     {
+        $this->saved[] = $images;
         foreach ($images as $image) {
             if ($this->repository->ifExistUrl($image)) {
                 continue;
