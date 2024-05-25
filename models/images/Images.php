@@ -1,8 +1,6 @@
 <?php
 
-namespace app\models;
-
-use app\models\Image;
+namespace app\models\images;
 
 class Images implements \Iterator
 {

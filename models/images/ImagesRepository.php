@@ -1,9 +1,9 @@
 <?php
 
-namespace app\models;
+namespace app\models\images;
 
 use app\models\Ad;
-use app\models\ImagesRecords;
+use app\models\images\ImagesRecords;
 
 class ImagesRepository
 {
@@ -24,7 +24,8 @@ class ImagesRepository
         if (!$records) {
             return false;
         }
-        return new ImagesRecords($records);
+        $recordsOfImages = array_map(fn($record) => new Images($record), $records);
+        return $recordsOfImages;
     }
 
     public function ifExistHash(Image $image): bool
@@ -40,10 +41,10 @@ class ImagesRepository
             ->exists();
     }
 
-    public function saveImages(Images $images)
+    public function saveImages(array $images): void
     {
         $hashes = [];
-        foreach ($images->getImagesToSave() as $image) {
+        foreach ($images as $image) {
             $hashes[] = $image->getHash();
             file_put_contents("../storage/{$image->getBaseName()}", $image->getPicture());
         }

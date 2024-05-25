@@ -3,7 +3,7 @@
 namespace app\controllers;
 
 use yii\web\Controller;
-use app\models\ImagesProcessor;
+use app\models\images\ImagesProcessor;
 
 class ImagesController extends Controller
 {
