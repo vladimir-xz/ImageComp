@@ -5,38 +5,30 @@ namespace app\models\images;
 class Images implements \Iterator
 {
     private int $index = 0;
-    private int $amountOfNew;
+    protected int $newAmount = 0;
     protected string $adId;
     protected array $images;
-    private array $newImages = [];
 
-    public function __construct($record)
+    public function __construct(int $adId)
     {
-        $jsonImages = json_decode($record->image_url);
-        $this->images = array_map(fn($im) => new Image($im), $jsonImages);
-        $this->amountOfNew = 0;
-        $this->adId = $record->ad_id;
+        $this->images = [];
+        $this->adId = $adId;
     }
 
-    public function addImageToSave(Image $image)
+    public function addImage(Image $image): void
     {
-        $this->amountOfNew++;
-        $this->newImages[] = $image;
+        $this->images[] = $image;
+        $this->newAmount++;
     }
 
-    public function getImagesToSave()
-    {
-        return $this->newImages;
-    }
-
-    public function getAmountOfNew()
-    {
-        return $this->amountOfNew;
-    }
-
-    public function getAdID()
+    public function getAdId(): int
     {
         return $this->adId;
+    }
+
+    public function getNewAnount(): int
+    {
+        return $this->newAmount;
     }
 
     public function __get($key)

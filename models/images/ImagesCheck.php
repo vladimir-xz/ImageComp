@@ -2,18 +2,18 @@
 
 namespace app\models\images;
 
-class ImagesCheckForNew
+class ImagesCheck
 {
-    public function findNewImages(Images $images, $repository)
+    public function findNew(Images $images, $repository)
     {
-        $newImages = [];
+        $newImages = new Images($images->getAdId());
         foreach ($images as $image) {
             if ($repository->ifExistUrl($image)) {
                 continue;
             } elseif ($repository->ifExistHash($image)) {
                 continue;
             }
-            $newImages[] = $image;
+            $newImages->addImage($image);
         }
         return $newImages;
     }

@@ -3,7 +3,6 @@
 namespace app\models\images;
 
 use app\models\Ad;
-use app\models\images\ImagesRecords;
 
 class ImagesRepository
 {
@@ -14,7 +13,7 @@ class ImagesRepository
         $this->db = Ad::find();
     }
 
-    public function getRecords(int $fromOffset, int $limitPerPequest)
+    public function getRecords(int $fromOffset, int $limitPerPequest): ?Records
     {
         $records = $this->db
             ->offset($fromOffset)
@@ -22,10 +21,22 @@ class ImagesRepository
             ->where(['is not', 'image_url', null])
             ->all();
         if (!$records) {
-            return false;
+            return null;
         }
-        $recordsOfImages = array_map(fn($record) => new Images($record), $records);
-        return $recordsOfImages;
+        $preparedRecords = $this->prepareRecords($records);
+        return $preparedRecords;
+    }
+
+    private function prepareRecords($records): Records
+    {
+        $preparedRecords = new Records();
+        foreach ($records as $record) {
+            $images = new Images($record->ad_id);
+            $urls = json_decode($record->image_url);
+            array_map(fn ($url) => $images->addImage(new Image($url)), $urls);
+            $preparedRecords->addRecord($images);
+        }
+        return $preparedRecords;
     }
 
     public function ifExistHash(Image $image): bool
@@ -41,7 +52,7 @@ class ImagesRepository
             ->exists();
     }
 
-    public function saveImages(array $images): void
+    public function save(Images $images): void
     {
         $hashes = [];
         foreach ($images as $image) {

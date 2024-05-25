@@ -2,10 +2,10 @@
 
 namespace app\Tests;
 
-require_once __DIR__ . '/../../models/Image.php';
+require_once __DIR__ . '/../../models/images/Image.php';
 
 use PHPUnit\Framework\TestCase;
-use app\models\Image;
+use app\models\images\Image;
 
 function getPathToFixture($fileName)
 {
